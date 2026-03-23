@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vayda's Reading Progress Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f4ff;
+    --surface: #ffffff;
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+    --accent: #f59e0b;
+    --green: #10b981;
+    --green-light: #d1fae5;
+    --orange: #f97316;
+    --orange-light: #ffedd5;
+    --text: #1e1b4b;
+    --text-muted: #6b7280;
+    --border: #e0e7ff;
+    --shadow: 0 4px 24px rgba(79,70,229,0.10);
+    --radius: 18px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(79,70,229,0.3);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .header-title span { color: #fcd34d; }
+  .back-btn {
+    background: rgba(255,255,255,0.18);
+    border: none;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* ── HOME PAGE ── */
+  .home-main { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 22px;
+    background: var(--primary);
+    border-radius: 3px;
+  }
+
+  /* Week tiles */
+  .week-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  .week-tile {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 26px 22px 22px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    border: 2.5px solid transparent;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .week-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .week-tile.w1::before { background: linear-gradient(90deg, #6366f1, #818cf8); }
+  .week-tile.w2::before { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+  .week-tile.w3::before { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
+  .week-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(79,70,229,0.18);
+    border-color: var(--primary-light);
+  }
+  .tile-badge {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+  .w1 .tile-badge { background: #e0e7ff; color: #4338ca; }
+  .w2 .tile-badge { background: #ede9fe; color: #6d28d9; }
+  .w3 .tile-badge { background: #f3e8ff; color: #7c3aed; }
+  .tile-dates {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+  .tile-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-mini {
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+  .stat-mini-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+  .stat-mini-val {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  .stat-mini-val.xp-val { color: var(--primary); }
+  .stat-mini-val.green-val { color: var(--green); }
+  .tile-arrow {
+    position: absolute;
+    bottom: 18px; right: 18px;
+    font-size: 1.3rem;
+    color: var(--primary-light);
+  }
+  .tile-click-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 10px;
+    font-weight: 600;
+  }
+  .coming-soon-badge {
+    background: #f3f4f6;
+    color: #6b7280;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Charts */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .chart-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  .chart-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  /* ── WEEK DETAIL PAGE ── */
+  .week-main { padding: 28px 32px; max-width: 1100px; margin: 0 auto; }
+
+  .week-header-band {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 24px rgba(79,70,229,0.25);
+  }
+  .week-header-band h2 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+  .week-header-band p { font-size: 0.9rem; opacity: 0.85; margin-top: 3px; }
+  .week-kpis { display: flex; gap: 20px; }
+  .kpi-pill {
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+    padding: 10px 18px;
+    text-align: center;
+  }
+  .kpi-pill-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+  .kpi-pill-val { font-family: 'Baloo 2', sans-serif; font-size: 1.4rem; font-weight: 800; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .detail-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .detail-card-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .full-width-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+
+  /* Lessons table */
+  .lessons-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .lessons-table th {
+    background: var(--bg);
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 700;
+  }
+  .lessons-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .lessons-table tr:last-child td { border-bottom: none; }
+  .lessons-table tr:hover td { background: #f8f9ff; }
+  .source-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .badge-moby { background: #dbeafe; color: #1d4ed8; }
+  .badge-alpha { background: #dcfce7; color: #166534; }
+  .mastery-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid #e5e7eb;
+  }
+  .mastery-dot.mastered { background: var(--green); border-color: var(--green); }
+  .mastery-dot.in-progress { background: var(--accent); border-color: var(--accent); }
+  .mastery-dot.not-started { background: #e5e7eb; }
+  .xp-chip {
+    font-size: 0.72rem;
+    font-weight: 800;
+    background: #ede9fe;
+    color: #6d28d9;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Stats display */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .stat-display {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-display-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .stat-display-val {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--primary);
+  }
+
+  /* Feedback */
+  .feedback-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .feedback-box {
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .feedback-box.positive { background: var(--green-light); border: 2px solid #6ee7b7; }
+  .feedback-box.needs-work { background: var(--orange-light); border: 2px solid #fdba74; }
+  .feedback-label {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .feedback-label.positive { color: #065f46; }
+  .feedback-label.needs-work { color: #9a3412; }
+  .feedback-text {
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+    min-height: 60px;
+  }
+  .notes-card {
+    background: #fffbeb;
+    border: 2px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .notes-label {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #92400e;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .notes-text { font-size: 0.88rem; line-height: 1.6; color: var(--text); }
+
+  .data-badge {
+    font-size: 0.7rem;
+    color: var(--green);
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 768px) {
+    .week-tiles, .charts-grid, .detail-grid, .feedback-grid { grid-template-columns: 1fr; }
+    .week-kpis { display: none; }
+    .home-main, .week-main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════ -->
+<div id="page-home" class="page active">
+  <header>
+    <div class="header-title">📚 <span>Vayda's</span> Reading Progress</div>
+    <div style="font-size:0.85rem;opacity:0.8;">March – April 2026</div>
+  </header>
+
+  <div class="home-main">
+
+    <div class="section-label">Weekly Overview — Click a tile to see details</div>
+    <div class="week-tiles">
+
+      <!-- Week 1 -->
+      <div class="week-tile w1" onclick="openWeek(1)">
+        <span class="tile-badge">Week 1</span>
+        <div class="tile-dates">Mar 16 – Mar 22</div>
+        <div class="tile-stats">
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Planned</div>
+            <div class="stat-mini-val xp-val">124 XP</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Earned</div>
+            <div class="stat-mini-val xp-val">190 XP</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Time Spent</div>
+            <div class="stat-mini-val">144.8 min</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Avg Accuracy</div>
+            <div class="stat-mini-val green-val">52.7%</div>
+          </div>
+        </div>
+        <div class="data-badge">✅ Data loaded from TimeBack</div>
+        <div class="tile-click-hint">👆 Click to view full details</div>
+        <span class="tile-arrow">→</span>
+      </div>
+
+      <!-- Week 2 -->
+      <div class="week-tile w2" onclick="openWeek(2)" style="opacity:0.65">
+        <span class="coming-soon-badge">Upcoming</span>
+        <span class="tile-badge">Week 2</span>
+        <div class="tile-dates">Mar 23 – Mar 29</div>
+        <div class="tile-stats">
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Planned</div>
+            <div class="stat-mini-val xp-val">127 XP</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Earned</div>
+            <div class="stat-mini-val xp-val">—</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Time Spent</div>
+            <div class="stat-mini-val">—</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Avg Accuracy</div>
+            <div class="stat-mini-val green-val">—</div>
+          </div>
+        </div>
+        <div class="tile-click-hint">👆 Click to open</div>
+        <span class="tile-arrow">→</span>
+      </div>
+
+      <!-- Week 3 -->
+      <div class="week-tile w3" onclick="openWeek(3)" style="opacity:0.65">
+        <span class="coming-soon-badge">Upcoming</span>
+        <span class="tile-badge">Week 3</span>
+        <div class="tile-dates">Mar 30 – Apr 5</div>
+        <div class="tile-stats">
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Planned</div>
+            <div class="stat-mini-val xp-val">83 XP</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">XP Earned</div>
+            <div class="stat-mini-val xp-val">—</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Time Spent</div>
+            <div class="stat-mini-val">—</div>
+          </div>
+          <div class="stat-mini">
+            <div class="stat-mini-label">Avg Accuracy</div>
+            <div class="stat-mini-val green-val">—</div>
+          </div>
+        </div>
+        <div class="tile-click-hint">👆 Click to open</div>
+        <span class="tile-arrow">→</span>
+      </div>
+    </div>
+
+    <!-- Trend Charts -->
+    <div class="section-label">Trend Charts — 3 Weeks at a Glance</div>
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">⭐ XP Earned vs Planned</div>
+        <canvas id="chart-xp" height="180"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">⏱️ Time Spent (min)</div>
+        <canvas id="chart-time" height="180"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🎯 Avg Accuracy (%)</div>
+        <canvas id="chart-accuracy" height="180"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     WEEK 1 DETAIL PAGE
+════════════════════════════════════════ -->
+<div id="page-week1" class="page">
+  <header>
+    <div class="header-title">📚 Week 1 — <span>Mar 16–22</span></div>
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+  </header>
+  <div class="week-main">
+
+    <div class="week-header-band">
+      <div>
+        <h2>Week 1 Progress</h2>
+        <p>March 16 – March 22, 2026 · Target: ~25 XP/day</p>
+      </div>
+      <div class="week-kpis">
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Planned</div><div class="kpi-pill-val">124</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Earned</div><div class="kpi-pill-val">190</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Time</div><div class="kpi-pill-val">144.8m</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Accuracy</div><div class="kpi-pill-val">52.7%</div></div>
+      </div>
+    </div>
+
+    <!-- Daily XP Chart -->
+    <div class="full-width-card">
+      <div class="detail-card-title">📅 Daily XP — Week 1</div>
+      <canvas id="chart-daily-xp" height="100"></canvas>
+    </div>
+
+    <!-- Lessons + Stats -->
+    <div class="detail-grid">
+      <div class="detail-card">
+        <div class="detail-card-title">📋 Planned Lessons</div>
+        <table class="lessons-table">
+          <thead><tr><th>Lesson</th><th>Source</th><th>XP</th><th>Status</th></tr></thead>
+          <tbody id="lessons-w1-tbody"></tbody>
+        </table>
+      </div>
+
+      <div>
+        <div class="detail-card" style="margin-bottom:16px">
+          <div class="detail-card-title">⏱️ Time & Accuracy</div>
+          <div class="stats-row">
+            <div class="stat-display">
+              <div class="stat-display-label">Total Time</div>
+              <div class="stat-display-val">144.8<span style="font-size:0.9rem;color:var(--text-muted)"> min</span></div>
+            </div>
+            <div class="stat-display">
+              <div class="stat-display-label">Avg Accuracy</div>
+              <div class="stat-display-val">52.7<span style="font-size:0.9rem;color:var(--text-muted)">%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-card-title">📊 XP: Planned vs Earned</div>
+          <canvas id="chart-w1-summary" height="140"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="section-label">Feedback</div>
+    <div class="feedback-grid">
+      <div class="feedback-box positive">
+        <div class="feedback-label positive">🌟 What went well</div>
+        <div class="feedback-text" id="w1-positive">Vayda, you had a really strong start on Wednesday! You completed all your MobyMax lessons and mastered every single one of them — that shows you absolutely have the ability to do this work when you put your mind to it. Even when two lessons sent you back for extra practice, you pushed through and hit 80% mastery on your second try. That kind of persistence is something to be proud of. Keep that energy going!</div>
+      </div>
+      <div class="feedback-box needs-work">
+        <div class="feedback-label needs-work">🔧 Needs improvement</div>
+        <div class="feedback-text" id="w1-needs-work">This week we noticed that you spent a lot of time switching tabs, idling, and not staying focused on the task — and on Friday, no Reading work was done at all. It's also important to stick to your assigned plan: on Thursday, you worked on MobyMax Grade 5 lessons to earn XP, but your assigned work is in Grade 4 — it's important to always follow your plan and work on the lessons that have been set for you, not choose different ones. This week, the priority is the Alpha Read articles that weren't completed last week, and MobyMax should only be opened when it shows up on your TimeBack dashboard. Remember, earning XP is not the goal on its own — what really matters is sitting down, reading carefully, and using the strategies you already know, like going back to the text and looking for context clues. You are already a little behind, and following your plan closely is what will help you catch up and move forward successfully.</div>
+      </div>
+    </div>
+    <div class="notes-card">
+      <div class="notes-label">📝 Additional Notes</div>
+      <div class="notes-text" id="w1-notes">Vayda, here is a simple strategy that can make a big difference: set a timer for 10–15 minutes of completely focused work. During that time, stay on your task, don't switch tabs, and avoid chatting with peers. When the timer rings, give yourself a 2-minute break — then start again. Short, focused sessions are much more powerful than long stretches of distracted time. Your plan will be adjusted to reflect where you are this week, but the most important thing you can do is commit to showing up fully every day. You have what it takes — now it's about building the habit of focused, intentional learning. We believe in you! 💪</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     WEEK 2 DETAIL PAGE
+════════════════════════════════════════ -->
+<div id="page-week2" class="page">
+  <header>
+    <div class="header-title">📚 Week 2 — <span>Mar 23–29</span></div>
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+  </header>
+  <div class="week-main">
+    <div class="week-header-band">
+      <div><h2>Week 2 Progress</h2><p>March 23 – March 29, 2026 · Target: ~25 XP/day</p></div>
+      <div class="week-kpis">
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Planned</div><div class="kpi-pill-val">127</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Earned</div><div class="kpi-pill-val">—</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Time</div><div class="kpi-pill-val">—</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Accuracy</div><div class="kpi-pill-val">—</div></div>
+      </div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-card-title">📋 Planned Lessons</div>
+      <table class="lessons-table">
+        <thead><tr><th>Lesson</th><th>Source</th><th>XP</th><th>Status</th></tr></thead>
+        <tbody id="lessons-w2-tbody"></tbody>
+      </table>
+    </div>
+    <br>
+    <div class="section-label">Feedback</div>
+    <div class="feedback-grid">
+      <div class="feedback-box positive"><div class="feedback-label positive">🌟 What went well</div><div class="feedback-text">—</div></div>
+      <div class="feedback-box needs-work"><div class="feedback-label needs-work">🔧 Needs improvement</div><div class="feedback-text">—</div></div>
+    </div>
+    <div class="notes-card"><div class="notes-label">📝 Additional Notes</div><div class="notes-text">—</div></div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     WEEK 3 DETAIL PAGE
+════════════════════════════════════════ -->
+<div id="page-week3" class="page">
+  <header>
+    <div class="header-title">📚 Week 3 — <span>Mar 30 – Apr 5</span></div>
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+  </header>
+  <div class="week-main">
+    <div class="week-header-band">
+      <div><h2>Week 3 Progress</h2><p>March 30 – April 5, 2026 · Target: ~25 XP/day</p></div>
+      <div class="week-kpis">
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Planned</div><div class="kpi-pill-val">83</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Earned</div><div class="kpi-pill-val">—</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Time</div><div class="kpi-pill-val">—</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Accuracy</div><div class="kpi-pill-val">—</div></div>
+      </div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-card-title">📋 Planned Lessons</div>
+      <table class="lessons-table">
+        <thead><tr><th>Lesson</th><th>Source</th><th>XP</th><th>Status</th></tr></thead>
+        <tbody id="lessons-w3-tbody"></tbody>
+      </table>
+    </div>
+    <br>
+    <div class="section-label">Feedback</div>
+    <div class="feedback-grid">
+      <div class="feedback-box positive"><div class="feedback-label positive">🌟 What went well</div><div class="feedback-text">—</div></div>
+      <div class="feedback-box needs-work"><div class="feedback-label needs-work">🔧 Needs improvement</div><div class="feedback-text">—</div></div>
+    </div>
+    <div class="notes-card"><div class="notes-label">📝 Additional Notes</div><div class="notes-text">—</div></div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════════════
+// LESSON DATA — from PDF plan
+// ══════════════════════════════════════════════
+const weekData = {
+  1: {
+    lessons: [
+      { name: "Analyze how setting contributes to plot", source: "MobyMax", xp: 5, status: "mastered" },
+      { name: "Describe events in stories", source: "MobyMax", xp: 7, status: "mastered" },
+      { name: "Describe events in dramas", source: "MobyMax", xp: 5, status: "mastered" },
+      { name: "Identify the parts of a plot structure", source: "MobyMax", xp: 3, status: "mastered" },
+      { name: "Analyze plot structure within a story", source: "MobyMax", xp: 4, status: "mastered" },
+      { name: "Sir Gawaine on the Quest", source: "Alpha Read", xp: 13, status: "mastered" },
+      { name: "Sir Percival", source: "Alpha Read", xp: 11, status: "not-started" },
+      { name: "The Death of Dindrane", source: "Alpha Read", xp: 14, status: "not-started" },
+      { name: "The Achievement of the Grail", source: "Alpha Read", xp: 12, status: "not-started" },
+      { name: "Sir Lancelot and the Lily Maid of Astolat", source: "Alpha Read", xp: 12, status: "not-started" },
+      { name: "The Queen and the Poisoned Apple", source: "Alpha Read", xp: 12, status: "not-started" },
+      { name: "Sir Meliagraunce", source: "Alpha Read", xp: 14, status: "not-started" },
+      { name: "The Civil War", source: "Alpha Read", xp: 12, status: "not-started" }
+    ]
+  },
+  2: {
+    lessons: [
+      { name: "The Departure of Sir Lancelot", source: "Alpha Read", xp: 13, status: "not-started" },
+      { name: "The Last Battle and the Death of Arthur", source: "Alpha Read", xp: 13, status: "not-started" },
+      { name: "The Death of Guenevere and of Sir Lancelot", source: "Alpha Read", xp: 12, status: "not-started" },
+      { name: "Identify prefixes, suffixes, and root words", source: "MobyMax", xp: 3, status: "not-started" },
+      { name: "Use prefixes to determine word meaning", source: "MobyMax", xp: 3, status: "not-started" },
+      { name: "Use suffixes to determine word meaning", source: "MobyMax", xp: 3, status: "not-started" },
+      { name: "Use definitions to determine word meaning", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Use examples to determine word meaning", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: '"Clarence" by Shel Silverstein', source: "Alpha Read", xp: 8, status: "not-started" },
+      { name: '"A Tragic Story" by W.M. Thackeray', source: "Alpha Read", xp: 7, status: "not-started" },
+      { name: '"Things" by Eloise Greenfield', source: "Alpha Read", xp: 7, status: "not-started" },
+      { name: '"Life Doesn\'t Frighten Me" by Maya Angelou', source: "Alpha Read", xp: 9, status: "not-started" },
+      { name: '"Dreams" by Langston Hughes', source: "Alpha Read", xp: 5, status: "not-started" },
+      { name: '"Afternoon on a Hill" by Edna St. Vincent', source: "Alpha Read", xp: 6, status: "not-started" },
+      { name: '"Clouds" by Christina Rossetti', source: "Alpha Read", xp: 5, status: "not-started" },
+      { name: '"Humanity" by Elma Stuckey', source: "Alpha Read", xp: 7, status: "not-started" },
+      { name: '"Concord Hymn" by Ralph Waldo Emerson', source: "Alpha Read", xp: 8, status: "not-started" },
+      { name: '"Paul Revere\'s Ride" by H.W. Longfellow', source: "Alpha Read", xp: 10, status: "not-started" }
+    ]
+  },
+  3: {
+    lessons: [
+      { name: "Use details and examples to explain what a text says", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Make inferences about a text", source: "MobyMax", xp: 7, status: "not-started" },
+      { name: "Identify details to support inferences", source: "MobyMax", xp: 7, status: "not-started" },
+      { name: "Identify explicit and implicit information", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Identify main events", source: "MobyMax", xp: 5, status: "not-started" },
+      { name: "Determine the identity of the narrator", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Identify first-person point of view", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Identify third-person point of view", source: "MobyMax", xp: 3, status: "not-started" },
+      { name: "Identify both first- and third-person POV", source: "MobyMax", xp: 4, status: "not-started" },
+      { name: "Compare first- and third-person POV", source: "MobyMax", xp: 6, status: "not-started" },
+      { name: "Causes and effects in scientific texts", source: "MobyMax", xp: 9, status: "not-started" },
+      { name: "Steps in technical procedures", source: "MobyMax", xp: 5, status: "not-started" },
+      { name: "Analyze how charts help us understand texts", source: "MobyMax", xp: 6, status: "not-started" },
+      { name: "Analyze how graphs help us understand texts", source: "MobyMax", xp: 5, status: "not-started" },
+      { name: "Analyze how timelines help us understand texts", source: "MobyMax", xp: 5, status: "not-started" },
+      { name: "Analyze how diagrams help us understand texts", source: "MobyMax", xp: 5, status: "not-started" }
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════
+// RENDER LESSONS (read-only)
+// ══════════════════════════════════════════════
+function renderLessons(week) {
+  const tbody = document.getElementById(`lessons-w${week}-tbody`);
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  weekData[week].lessons.forEach(lesson => {
+    const badgeClass = lesson.source === 'MobyMax' ? 'badge-moby' : 'badge-alpha';
+    tbody.innerHTML += `
+      <tr>
+        <td style="max-width:220px">${lesson.name}</td>
+        <td><span class="source-badge ${badgeClass}">${lesson.source}</span></td>
+        <td><span class="xp-chip">${lesson.xp} XP</span></td>
+        <td><span class="mastery-dot ${lesson.status}"></span></td>
+      </tr>`;
+  });
+}
+
+// ══════════════════════════════════════════════
+// CHARTS
+// ══════════════════════════════════════════════
+function initCharts() {
+  const baseOpts = {
+    responsive: true,
+    plugins: { legend: { position: 'bottom', labels: { font: { family: 'Nunito', size: 11 }, padding: 10 } } },
+    scales: {
+      x: { ticks: { font: { family: 'Nunito', size: 11 } }, grid: { display: false } },
+      y: { ticks: { font: { family: 'Nunito', size: 11 } }, grid: { color: '#f0f0f0' } }
+    }
+  };
+
+  // Home: XP chart
+  new Chart(document.getElementById('chart-xp'), {
+    type: 'bar',
+    data: {
+      labels: ['Wk 1', 'Wk 2', 'Wk 3'],
+      datasets: [
+        { label: 'Planned', data: [124, 127, 83], backgroundColor: '#e0e7ff', borderRadius: 6 },
+        { label: 'Earned', data: [190, null, null], backgroundColor: '#6366f1', borderRadius: 6 }
+      ]
+    },
+    options: { ...baseOpts }
+  });
+
+  // Home: Time chart
+  new Chart(document.getElementById('chart-time'), {
+    type: 'line',
+    data: {
+      labels: ['Wk 1', 'Wk 2', 'Wk 3'],
+      datasets: [{ label: 'Time (min)', data: [144.8, null, null], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#8b5cf6', fill: true, tension: 0.4 }]
+    },
+    options: { ...baseOpts }
+  });
+
+  // Home: Accuracy chart
+  new Chart(document.getElementById('chart-accuracy'), {
+    type: 'line',
+    data: {
+      labels: ['Wk 1', 'Wk 2', 'Wk 3'],
+      datasets: [{ label: 'Accuracy %', data: [52.7, null, null], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#10b981', fill: true, tension: 0.4 }]
+    },
+    options: { ...baseOpts, scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, min: 0, max: 100 } } }
+  });
+
+  // Week 1: Daily XP
+  new Chart(document.getElementById('chart-daily-xp'), {
+    type: 'bar',
+    data: {
+      labels: ['Mon Mar 16', 'Tue Mar 17', 'Wed Mar 18', 'Thu Mar 19', 'Fri Mar 20'],
+      datasets: [
+        { label: 'Target (25 XP)', data: [25, 25, 25, 25, 25], backgroundColor: 'rgba(99,102,241,0.15)', borderRadius: 6 },
+        { label: 'Earned', data: [50, 80, 50, 10, 0], backgroundColor: '#6366f1', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Nunito', size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { family: 'Nunito', size: 11 } }, grid: { display: false } },
+        y: { ticks: { font: { family: 'Nunito', size: 11 } }, max: 100, grid: { color: '#f0f0f0' } }
+      }
+    }
+  });
+
+  // Week 1: Summary
+  new Chart(document.getElementById('chart-w1-summary'), {
+    type: 'bar',
+    data: {
+      labels: ['XP'],
+      datasets: [
+        { label: 'Planned (124)', data: [124], backgroundColor: '#e0e7ff', borderRadius: 8 },
+        { label: 'Earned (190)', data: [190], backgroundColor: '#6366f1', borderRadius: 8 }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Nunito', size: 11 } } } },
+      scales: {
+        x: { max: 210, ticks: { font: { family: 'Nunito', size: 11 } }, grid: { color: '#f0f0f0' } },
+        y: { display: false }
+      }
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════
+function openWeek(week) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-week${week}`).classList.add('active');
+  window.scrollTo(0, 0);
+  renderLessons(week);
+}
+
+function goHome() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-home').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+window.onload = function() {
+  initCharts();
+  renderLessons(1);
+};
+</script>
+</body>
+</html>
