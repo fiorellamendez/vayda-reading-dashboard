@@ -544,7 +544,7 @@
 <body>
 
 <!-- ── LOCK OVERLAY ── -->
-<div class="lock-overlay" id="lock-overlay">
+<div class="lock-overlay hidden" id="lock-overlay">
   <div class="lock-modal">
     <div class="lock-modal-icon">🔒</div>
     <h3>Editor Access</h3>
@@ -1245,7 +1245,7 @@ const realWeek1 = {
 // INIT
 // ══════════════════════════════════════════════
 window.onload = function() {
-  // Start locked
+  // Start locked (view only - overlay hidden, inputs disabled)
   document.body.classList.add('locked');
   initCharts();
   renderLessons(1);
