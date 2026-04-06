@@ -469,25 +469,25 @@
       </div>
 
       <!-- Week 3 -->
-      <div class="week-tile w3" onclick="openWeek(3)" style="opacity:0.65">
-        <span class="coming-soon-badge">Upcoming</span>
+      <div class="week-tile w3" onclick="openWeek(3)">
         <span class="tile-badge">Week 3</span>
         <div class="tile-dates">Mar 30 – Apr 5</div>
         <div class="tile-stats">
           <div class="stat-mini">
             <div class="stat-mini-label">XP Earned</div>
-            <div class="stat-mini-val xp-val">—</div>
+            <div class="stat-mini-val xp-val">166 XP</div>
           </div>
           <div class="stat-mini">
             <div class="stat-mini-label">Time Spent</div>
-            <div class="stat-mini-val">—</div>
+            <div class="stat-mini-val">~94 min</div>
           </div>
           <div class="stat-mini">
             <div class="stat-mini-label">Avg Accuracy</div>
-            <div class="stat-mini-val green-val">—</div>
+            <div class="stat-mini-val green-val">70%</div>
           </div>
         </div>
-        <div class="tile-click-hint">👆 Click to open</div>
+        <div class="data-badge">✅ Data loaded from TimeBack</div>
+        <div class="tile-click-hint">👆 Click to view full details</div>
         <span class="tile-arrow">→</span>
       </div>
     </div>
@@ -506,41 +506,6 @@
       <div class="chart-card">
         <div class="chart-title">🎯 Avg Accuracy (%)</div>
         <canvas id="chart-accuracy" height="180"></canvas>
-      </div>
-    </div>
-
-    <!-- Master Lesson List -->
-    <div class="section-label">Complete Lesson Plan — All 3 Weeks</div>
-    <div class="detail-card" style="margin-bottom:32px">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px">
-
-        <!-- Week 1 -->
-        <div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:var(--primary);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">Week 1 — Mar 16–22 <span style="font-size:0.75rem;background:#e0e7ff;color:#4338ca;padding:2px 8px;border-radius:10px;margin-left:6px;">124 XP</span></div>
-          <table class="lessons-table" id="master-w1-table">
-            <thead><tr><th>Lesson</th></tr></thead>
-            <tbody id="master-w1-tbody"></tbody>
-          </table>
-        </div>
-
-        <!-- Week 2 -->
-        <div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#7c3aed;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">Week 2 — Mar 23–29 <span style="font-size:0.75rem;background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:10px;margin-left:6px;">127 XP</span></div>
-          <table class="lessons-table" id="master-w2-table">
-            <thead><tr><th>Lesson</th></tr></thead>
-            <tbody id="master-w2-tbody"></tbody>
-          </table>
-        </div>
-
-        <!-- Week 3 -->
-        <div>
-          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1rem;color:#a78bfa;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--border);">Week 3 — Mar 30–Apr 5 <span style="font-size:0.75rem;background:#f3e8ff;color:#7c3aed;padding:2px 8px;border-radius:10px;margin-left:6px;">83 XP</span></div>
-          <table class="lessons-table" id="master-w3-table">
-            <thead><tr><th>Lesson</th></tr></thead>
-            <tbody id="master-w3-tbody"></tbody>
-          </table>
-        </div>
-
       </div>
     </div>
 
@@ -722,19 +687,103 @@
     <div class="week-header-band">
       <div><h2>Week 3 Progress</h2><p>March 30 – April 5, 2026 · Target: ~25 XP/day</p></div>
       <div class="week-kpis">
-        
-        <div class="kpi-pill"><div class="kpi-pill-label">XP Earned</div><div class="kpi-pill-val">—</div></div>
-        <div class="kpi-pill"><div class="kpi-pill-label">Time</div><div class="kpi-pill-val">—</div></div>
-        <div class="kpi-pill"><div class="kpi-pill-label">Accuracy</div><div class="kpi-pill-val">—</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">XP Earned</div><div class="kpi-pill-val">166</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Time</div><div class="kpi-pill-val">~94m</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">AR Accuracy</div><div class="kpi-pill-val">70%</div></div>
+        <div class="kpi-pill"><div class="kpi-pill-label">Days Active</div><div class="kpi-pill-val">3 / 5</div></div>
       </div>
     </div>
-    <br>
+
+    <!-- Daily XP Chart -->
+    <div class="full-width-card">
+      <div class="detail-card-title">📅 Daily XP — Week 3</div>
+      <canvas id="chart-daily-xp-w3" height="100"></canvas>
+    </div>
+
+    <!-- Lessons + Stats -->
+    <div class="detail-grid">
+      <div class="detail-card">
+        <div class="detail-card-title">✅ Lessons Completed This Week</div>
+        <table class="lessons-table">
+          <thead><tr><th>Lesson</th><th>Source</th><th>XP</th><th>✓</th></tr></thead>
+          <tbody>
+            <tr><td>Identify main events</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Determine the identity of the narrator</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Identify first-person point of view</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Identify third-person point of view</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Identify both first- and third-person POV</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Compare first- and third-person POV</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Causes and effects in scientific texts</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Steps in technical procedures</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Analyze how charts help us understand texts</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Analyze how graphs help us understand texts</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Analyze how timelines help us understand texts</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>Analyze how diagrams help us understand texts</td><td><span class="source-badge badge-moby">MobyMax</span></td><td><span class="xp-chip" style="white-space:nowrap">10 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Old Seadog and the Black Spot</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">13 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Sea Chest and the Blind Man</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">18 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Real Adventure Begins</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>What I Heard in the Apple Barrel</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Man on the Island</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">16 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Plan</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">14 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>"Shiver Me Timbers"</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">14 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>My Life Hangs in the Balance</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+            <tr><td>The Adventure Comes to an End</td><td><span class="source-badge badge-alpha">Alpha Read</span></td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td><td><span class="mastery-dot mastered"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <div class="detail-card" style="margin-bottom:16px">
+          <div class="detail-card-title">⏱️ Time & Accuracy</div>
+          <div class="stats-row">
+            <div class="stat-display">
+              <div class="stat-display-label">Total Time</div>
+              <div class="stat-display-val">~94<span style="font-size:0.9rem;color:var(--text-muted)"> min</span></div>
+            </div>
+            <div class="stat-display">
+              <div class="stat-display-label">AR Accuracy</div>
+              <div class="stat-display-val">70<span style="font-size:0.9rem;color:var(--text-muted)">%</span></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:0.82rem;color:var(--text-muted);line-height:1.6;">
+            <strong style="color:var(--text)">AlphaRead:</strong> 53/76 ≈ 70% · <strong style="color:var(--text)">MobyMax:</strong> ~40–50% (retake loop)<br>
+            <strong style="color:var(--text)">AlphaRead XP:</strong> 75 · <strong style="color:var(--text)">MobyMax XP:</strong> ~91 · <strong style="color:var(--text)">Days active:</strong> 3/5
+          </div>
+        </div>
+        <div class="detail-card">
+          <div class="detail-card-title">📖 AR Article Breakdown</div>
+          <table class="lessons-table" style="font-size:0.78rem">
+            <thead><tr><th>Article</th><th>Score</th><th>XP</th></tr></thead>
+            <tbody>
+              <tr><td>The Old Seadog</td><td>7/8 · 88%</td><td><span class="xp-chip" style="white-space:nowrap">13 XP</span></td></tr>
+              <tr><td>The Sea Chest</td><td>8/8 · 100% 🌟</td><td><span class="xp-chip" style="white-space:nowrap">18 XP</span></td></tr>
+              <tr><td>The Real Adventure</td><td>3/9 · 33%</td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td></tr>
+              <tr><td>Apple Barrel</td><td>3/9 · 33%</td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td></tr>
+              <tr><td>The Man on the Island</td><td>8/8 · 100% 🌟</td><td><span class="xp-chip" style="white-space:nowrap">16 XP</span></td></tr>
+              <tr><td>The Plan</td><td>7/8 · 88%</td><td><span class="xp-chip" style="white-space:nowrap">14 XP</span></td></tr>
+              <tr><td>"Shiver Me Timbers"</td><td>8/9 · 89%</td><td><span class="xp-chip" style="white-space:nowrap">14 XP</span></td></tr>
+              <tr><td>My Life Hangs in Balance</td><td>2/8 · 25%</td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td></tr>
+              <tr><td>Adventure Comes to End</td><td>7/9 · 78%</td><td><span class="xp-chip" style="white-space:nowrap">0 XP</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div class="section-label">Feedback</div>
     <div class="feedback-grid">
-      <div class="feedback-box positive"><div class="feedback-label positive">🌟 What went well</div><div class="feedback-text">—</div></div>
-      <div class="feedback-box needs-work"><div class="feedback-label needs-work">🔧 Needs improvement</div><div class="feedback-text">—</div></div>
+      <div class="feedback-box positive">
+        <div class="feedback-label positive">🌟 What went well</div>
+        <div class="feedback-text">Vayda, when you were focused this week, you were really focused — The Sea Chest and the Blind Man and The Man on the Island both came in at 100%, and The Plan and "Shiver Me Timbers" were close behind at 88–89%. That shows your reading comprehension is genuinely strong when you're giving it your full attention. You also powered through all 12 MobyMax skills this week — including some really tough ones. Compare and Contrast POV was a genuine wall, and you didn't give up. Getting there on the 8th attempt shows real determination. That persistence matters.</div>
+      </div>
+      <div class="feedback-box needs-work">
+        <div class="feedback-label needs-work">🔧 Needs improvement</div>
+        <div class="feedback-text">This week had some serious concerns. You worked only 3 out of 5 days — Thursday and Friday had zero reading. The late-night sessions are also a real problem: your two worst scores this week (33% each) came from reading done after midnight. That's not a coincidence — your brain simply can't read carefully at that hour. The all-or-nothing pattern is also continuing: you can score 100% but also 25%. There's no gradual decline — when you're not focused, comprehension collapses entirely. You also earned 0 XP on 4 out of 9 AlphaRead articles, which is the same failure rate as last week. This needs to change.</div>
+      </div>
     </div>
-    <div class="notes-card"><div class="notes-label">📝 Additional Notes</div><div class="notes-text">—</div></div>
+    <div class="notes-card">
+      <div class="notes-label">📝 Additional Notes</div>
+      <div class="notes-text">The clearest finding this week is simple: avoid late-night reading cramming sessions. The data is unambiguous — your late-night sessions produced your worst scores. Reading requires real focus, and that's just not available late at night. Set a hard stop. The MobyMax work is now 100% complete — Batches 3 and 4 are done — and that's a big deal!<br><br><strong>After all this practice, you have been assigned a new Mastery Grade 4 Test. If you slow down, concentrate, and use the reading strategies you know, we believe you will crush it! 🌟💪🎉</strong></div>
+    </div>
   </div>
 </div>
 
@@ -897,7 +946,7 @@ function initCharts() {
     data: {
       labels: ['Wk 1', 'Wk 2', 'Wk 3'],
       datasets: [
-        { label: 'XP Earned', data: [190, 211, null], backgroundColor: '#6366f1', borderRadius: 6 }
+        { label: 'XP Earned', data: [190, 211, 166], backgroundColor: '#6366f1', borderRadius: 6 }
       ]
     },
     options: { ...baseOpts }
@@ -908,7 +957,7 @@ function initCharts() {
     type: 'line',
     data: {
       labels: ['Wk 1', 'Wk 2', 'Wk 3'],
-      datasets: [{ label: 'Time (min)', data: [144.8, 220, null], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#8b5cf6', fill: true, tension: 0.4 }]
+      datasets: [{ label: 'Time (min)', data: [144.8, 220, 94], borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#8b5cf6', fill: true, tension: 0.4 }]
     },
     options: { ...baseOpts }
   });
@@ -918,7 +967,7 @@ function initCharts() {
     type: 'line',
     data: {
       labels: ['Wk 1', 'Wk 2', 'Wk 3'],
-      datasets: [{ label: 'Accuracy %', data: [52.7, 76, null], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#10b981', fill: true, tension: 0.4 }]
+      datasets: [{ label: 'Accuracy %', data: [52.7, 76, 70], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderWidth: 3, pointRadius: 6, pointBackgroundColor: '#10b981', fill: true, tension: 0.4 }]
     },
     options: { ...baseOpts, scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, min: 0, max: 100 } } }
   });
@@ -951,6 +1000,26 @@ function initCharts() {
       datasets: [
         { label: 'Target (25 XP)', data: [25, 25, 25, 25, 25], backgroundColor: 'rgba(139,92,246,0.15)', borderRadius: 6 },
         { label: 'Earned', data: [0, 67, 44, 10, 90], backgroundColor: '#8b5cf6', borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { family: 'Nunito', size: 11 } } } },
+      scales: {
+        x: { ticks: { font: { family: 'Nunito', size: 11 } }, grid: { display: false } },
+        y: { ticks: { font: { family: 'Nunito', size: 11 } }, max: 120, grid: { color: '#f0f0f0' } }
+      }
+    }
+  });
+
+  // Week 3: Daily XP
+  new Chart(document.getElementById('chart-daily-xp-w3'), {
+    type: 'bar',
+    data: {
+      labels: ['Mon Mar 30', 'Tue Mar 31', 'Wed Apr 1', 'Thu Apr 2', 'Fri Apr 3'],
+      datasets: [
+        { label: 'Target (25 XP)', data: [25, 25, 25, 25, 25], backgroundColor: 'rgba(167,139,250,0.15)', borderRadius: 6 },
+        { label: 'Earned', data: [30, 91, 45, 0, 0], backgroundColor: '#a78bfa', borderRadius: 6 }
       ]
     },
     options: {
